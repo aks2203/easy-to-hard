@@ -1,0 +1,9 @@
+python train.py --save_json --output --model recur_net --epochs 0 --width 8 --depth 84 --train_batch_size 3000 --test_batch_size 3000 --test_mode max_conf --model_path checkpoints/recur/recur_84_1.pth --test_iterations 20 --eval_start 600000 --eval_end 700000
+python train.py --save_json --output --model recur_net --epochs 0 --width 8 --depth 84 --train_batch_size 3000 --test_batch_size 3000 --test_mode max_conf --model_path checkpoints/recur/recur_84_1.pth --test_iterations 21 --eval_start 600000 --eval_end 700000
+python train.py --save_json --output --model recur_net --epochs 0 --width 8 --depth 84 --train_batch_size 3000 --test_batch_size 3000 --test_mode max_conf --model_path checkpoints/recur/recur_84_1.pth --test_iterations 22 --eval_start 600000 --eval_end 700000
+python train.py --save_json --output --model recur_net --epochs 0 --width 8 --depth 84 --train_batch_size 3000 --test_batch_size 3000 --test_mode max_conf --model_path checkpoints/recur/recur_84_1.pth --test_iterations 23 --eval_start 600000 --eval_end 700000
+python train.py --save_json --output --model recur_net --epochs 0 --width 8 --depth 84 --train_batch_size 3000 --test_batch_size 3000 --test_mode max_conf --model_path checkpoints/recur/recur_84_1.pth --test_iterations 24 --eval_start 600000 --eval_end 700000
+
+python train.py --save_json --output --model ff_net --epochs 0 --width 8 --depth 84 --train_batch_size 3000 --test_batch_size 3000 --model_path checkpoints/ff/ff_84_1.pth --eval_start 600000 --eval_end 700000
+python train.py --save_json --output --model ff_net --epochs 0 --width 8 --depth 92 --train_batch_size 3000 --test_batch_size 3000 --model_path checkpoints/ff/ff_92_1.pth --eval_start 600000 --eval_end 700000
+python train.py --save_json --output --model ff_net --epochs 0 --width 8 --depth 96 --train_batch_size 3000 --test_batch_size 3000 --model_path checkpoints/ff/ff_96_1.pth --eval_start 600000 --eval_end 700000
