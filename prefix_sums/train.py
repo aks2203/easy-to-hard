@@ -36,7 +36,7 @@ def main():
     parser.add_argument("--checkpoint", default="check_default", type=str,
                         help="where to save the network")
     parser.add_argument("--clip", default=1.0, help="max gradient magnitude for training")
-    parser.add_argument("--data_path", default="./data", type=str, help="path to data files")
+    parser.add_argument("--data_path", default="../data", type=str, help="path to data files")
     parser.add_argument("--debug", action="store_true", help="debug?")
     parser.add_argument("--depth", default=8, type=int, help="depth of the network")
     parser.add_argument("--epochs", default=200, type=int, help="number of epochs for training")

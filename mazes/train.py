@@ -35,7 +35,7 @@ def main():
     parser = argparse.ArgumentParser(description="Deep Thinking")
     parser.add_argument("--checkpoint", default="check_default", type=str,
                         help="where to save the network")
-    parser.add_argument("--data_path", default="./data", type=str, help="path to data files")
+    parser.add_argument("--data_path", default="../data", type=str, help="path to data files")
     parser.add_argument("--depth", default=1, type=int, help="depth of the network")
     parser.add_argument("--epochs", default=200, type=int, help="number of epochs for training")
     parser.add_argument("--lr", default=0.1, type=float, help="learning rate")
