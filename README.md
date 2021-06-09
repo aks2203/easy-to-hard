@@ -1,6 +1,6 @@
 # Easy-To-Hard
 
-The official repository for the paper "Can You Learn an Algorithm? Generalizing from Easy to Hard Problems with Recurrent Networks".
+The official repository for the paper ["Can You Learn an Algorithm? Generalizing from Easy to Hard Problems with Recurrent Networks"](https://arxiv.org/abs/2106.04537).
 
 ## Getting Started
 ### Requirements    
