@@ -1,6 +1,6 @@
 # Easy-To-Hard
 
-The official repository for the paper "Can You Learn an Algorithm? Generalizing from Easy to Hard Problems with Recurrent Networks".
+The official repository for the paper ["Can You Learn an Algorithm? Generalizing from Easy to Hard Problems with Recurrent Networks"](https://arxiv.org/abs/2106.04537).
 
 ## Getting Started
 ### Requirements    
@@ -20,3 +20,13 @@ See the dataset specific documentation in the corresonding directories: [Prefix 
 
 ## Citing our paper
 If you find this code helpful, please consider citing our work.
+```
+@misc{schwarzschild2021learn,
+      title={Can You Learn an Algorithm? Generalizing from Easy to Hard Problems with Recurrent Networks}, 
+      author={Avi Schwarzschild and Eitan Borgnia and Arjun Gupta and Furong Huang and Uzi Vishkin and Micah Goldblum and Tom Goldstein},
+      year={2021},
+      eprint={2106.04537},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+```
