@@ -91,12 +91,8 @@ def main():
 
     ####################################################
     #               Dataset and Network and Optimizer
-    trainloader, testloader, evalloader = get_dataloaders(args.train_batch_size,
-                                                          args.test_batch_size,
-                                                          args.eval_start,
-                                                          args.eval_end,
-                                                          data_path=args.data_path,
-                                                          shuffle=args.shuffle)
+    trainloader, testloader, evalloader = get_dataloaders(args.train_batch_size, args.test_batch_size, args.eval_start,
+                                                          args.eval_end, shuffle=args.shuffle)
     # load model from path if a path is provided
     if args.model_path is not None:
         print(f"Loading model from checkpoint {args.model_path}...")
@@ -113,7 +109,7 @@ def main():
 
     net = torch.nn.DataParallel(net, device_ids=None)
     pytorch_total_params = sum(p.numel() for p in net.parameters())
-    optimizer = get_optimizer(args.optimizer, args.model, net, args.lr)
+    optimizer = get_optimizer(args.optimizer, net, args.lr)
 
     # print(net)
     print(f"This {args.model} has {pytorch_total_params/1e6:0.3f} million parameters.")

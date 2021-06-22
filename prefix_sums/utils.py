@@ -11,6 +11,7 @@ import json
 import os
 import sys
 
+from easy_to_hard_data import PrefixSumDataset
 from icecream import ic
 import torch
 import torch.utils.data as data
@@ -29,13 +30,15 @@ from models.recurrent_dilated_net import recur_dilated_net
 # pylint: disable=R0912, R0915, E1101, E1102, C0103, W0702, R0914, C0116, C0115, W0611
 
 
-def get_dataloaders(train_batch_size, test_batch_size, train_data, eval_data, train_split=0.8,
-                    shuffle=True, data_path=None):
+def get_dataloaders(train_batch_size, test_batch_size, train_data, eval_data, train_split=0.8, shuffle=True):
     """ Function to get pytorch dataloader objects
     input:
         dataset:            str, Name of the dataset
         train_batch_size:   int, Size of mini batches for training
         test_batch_size:    int, Size of mini batches for testing
+        train_data:         int, Number of bits in the training set
+        eval_data:          int, Number of bits in the training set
+        train_split:        float, Portion of training data to use for training (vs. testing in-distribution)
         shuffle:            bool, Data shuffle switch
     return:
         trainloader:    Pytorch dataloader object with training data
@@ -46,20 +49,8 @@ def get_dataloaders(train_batch_size, test_batch_size, train_data, eval_data, tr
               f"get_dataloaders(). Exiting.")
         sys.exit()
 
-    inputs = torch.load(os.path.join(f"{data_path}",
-                                     f"{train_data}_parity_data.pth")).unsqueeze(1) - 0.5
-    targets = torch.load(os.path.join(f"{data_path}",
-                                      f"{train_data}_parity_targets.pth")).long()
-    eval_inputs = torch.load(os.path.join(f"{data_path}",
-                                          f"{eval_data}_parity_data.pth")).unsqueeze(1) - 0.5
-    eval_targets = torch.load(os.path.join(f"{data_path}",
-                                           f"{eval_data}_parity_targets.pth")).long()
-
-    train_split = int(train_split * inputs.size(0))
-
-    dataset = torch.utils.data.TensorDataset(inputs, targets)
-    evalset = torch.utils.data.TensorDataset(eval_inputs, eval_targets)
-
+    dataset = PrefixSumDataset("./data", num_bits=train_data)
+    evalset = PrefixSumDataset("./data", num_bits=eval_data)
 
     trainset, testset = torch.utils.data.random_split(dataset,
                                                       [train_split, int(1e4 - train_split)],

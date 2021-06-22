@@ -8,7 +8,12 @@ To install requirements:
 
 ```pip install -r requirements.txt```
 
-To download datasets, see the [Google Drive folder](https://drive.google.com/drive/folders/1ad_ZESAddlfx-b3CnK1ohoKz6Sp8U-5g?usp=sharing). Download data and put it in the [./data](./data) directory.
+To use the datasets we use in this project, we recommend you install our [Python package](https://github.com/ask2203/easy-to-hard-data) `easy-to-hard-data` by running:
+```
+pip install easy-to-hard-data
+```
+
+You many also download raw datasets. See the [Google Drive folder](https://drive.google.com/drive/folders/1ad_ZESAddlfx-b3CnK1ohoKz6Sp8U-5g?usp=sharing).
 
 ## Training \& Testing
 See the dataset specific documentation in the corresonding directories: [Prefix Sums](./prefix_sums/README_PREFIXSUMS.md), [Mazes](./mazes/README_MAZES.md), [Chess](./chess/README_CHESS.md).

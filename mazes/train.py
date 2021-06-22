@@ -86,8 +86,7 @@ def main():
 
     ####################################################
     #               Dataset and Network and Optimizer
-    trainloader, testloader = get_dataloaders(args.train_batch_size, args.test_batch_size,
-                                              args.data_path, shuffle=args.shuffle)
+    trainloader, testloader = get_dataloaders(args.train_batch_size, args.test_batch_size, shuffle=args.shuffle)
 
     if args.model_path is not None:
         print(f"Loading model from checkpoint {args.model_path}...")

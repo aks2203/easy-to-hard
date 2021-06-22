@@ -7,14 +7,12 @@
 import datetime
 import json
 import os
-import random
 import sys
 from dataclasses import dataclass
 
-import numpy as np
+from easy_to_hard_data import MazeDataset
 import torch
 import torch.utils.data as data
-from torchvision import transforms as transforms
 from icecream import ic
 from torch.optim import SGD, Adam, AdamW
 from tqdm import tqdm
@@ -32,20 +30,10 @@ from models.resnet_segment import ff_resnet
 # pylint: disable=R0912, R0915, E1101, E1102, C0103, W0702, R0914, C0116, C0115, W0611
 
 
-def get_dataloaders(train_batch_size, test_batch_size, data_path, shuffle=True):
+def get_dataloaders(train_batch_size, test_batch_size, shuffle=True):
 
-    train_inputs_np = np.load(os.path.join(data_path, "train_small/inputs.npy"))
-    train_targets_np = np.load(os.path.join(data_path, "train_small/solutions.npy"))
-    test_inputs_np = np.load(os.path.join(data_path, "test_large/inputs.npy"))
-    test_targets_np = np.load(os.path.join(data_path, "test_large/solutions.npy"))
-
-    train_inputs = torch.from_numpy(train_inputs_np).float().permute(0, 3, 1, 2)
-    train_targets = torch.from_numpy(train_targets_np).permute(0, 3, 1, 2)
-    test_inputs = torch.from_numpy(test_inputs_np).float().permute(0, 3, 1, 2)
-    test_targets = torch.from_numpy(test_targets_np).permute(0, 3, 1, 2)
-
-    train_data = MazeDataset(train_inputs, train_targets, 5)
-    test_data = MazeDataset(test_inputs, test_targets, 7)
+    train_data = MazeDataset("./data", train=True)
+    test_data = MazeDataset("./data", train=False)
 
     trainloader = data.DataLoader(train_data, num_workers=0, batch_size=train_batch_size,
                                   shuffle=shuffle, drop_last=True)
@@ -60,7 +48,7 @@ def get_model(model, width, depth):
         model:      str, Name of the model
         width:      int, Width of network
         depth:      int, Depth of network
-        return:
+    return:
         net:        Pytorch Network Object
     """
     model = model.lower()
@@ -104,29 +92,6 @@ def load_model_from_checkpoint(model, model_path, width, depth):
     net.load_state_dict(state_dict["net"])
     net = net.to(device)
     return net, state_dict["epoch"], state_dict["optimizer"]
-
-
-class MazeDataset(data.Dataset):
-    """This is a dataset class for mazes.
-    padding and cropping is done correctly within this class for
-    small, medium, and large mazes.
-    """
-    def __init__(self, inputs, targets, maze_size):
-        self.inputs = inputs
-        self.targets = targets
-        self.padding = {5: 4, 6: 2, 7: 0}[maze_size]
-        self.pad = transforms.Pad(self.padding)
-
-    def __getitem__(self, index):
-        x = self.pad(self.inputs[index])
-        y = self.pad(self.targets[index])
-        i = random.randint(0, 2*self.padding)
-        j = random.randint(0, 2*self.padding)
-
-        return x[:, i:i+32, j:j+32], y[:, i:i+32, j:j+32]
-
-    def __len__(self):
-        return self.inputs.size(0)
 
 
 def now():

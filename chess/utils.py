@@ -12,6 +12,7 @@ from collections import OrderedDict
 from dataclasses import dataclass
 
 import einops
+from easy_to_hard_data import ChessPuzzleDataset
 import torch
 import torch.utils.data as data
 from icecream import ic
@@ -31,28 +32,22 @@ from models.recurrent_net import recur_net
 # pylint: disable=R0912, R0915, E1101, E1102, C0103, W0702, R0914, C0116, C0115, W0611
 
 
-def get_dataloaders(train_batch_size, test_batch_size, eval_start=600000, eval_end=700000,
-                    data_path=None, shuffle=True):
+def get_dataloaders(train_batch_size, test_batch_size, eval_start=600000, eval_end=700000, shuffle=True):
     """ Function to get pytorch dataloader objects
     input:
-        dataset:            str, Name of the dataset
         train_batch_size:   int, Size of mini batches for training
         test_batch_size:    int, Size of mini batches for testing
+        eval_start:         int, Which index does the eval set start at
+        eval_end:           int, Which index does the eval set end at
         shuffle:            bool, Data shuffle switch
     return:
         trainloader:    Pytorch dataloader object with training data
         testloader:     Pytorch dataloader object with testing data
+        evalloader:     Pytorch dataloader object with eval (harder) data
     """
 
-    puzzles = torch.load(os.path.join(f"{data_path}", "data.pth"))
-    targets = torch.load(os.path.join(f"{data_path}", "segment_targets.pth"))
-    who_moves = torch.load(os.path.join(f"{data_path}", "who_moves.pth"))
-
-    dataset = torch.utils.data.TensorDataset(puzzles[:eval_start], targets[:eval_start], who_moves[:eval_start])
-    evalset = torch.utils.data.TensorDataset(puzzles[eval_start:eval_end],
-                                             targets[eval_start:eval_end],
-                                             # who_moves[eval_start:eval_end],
-                                             )
+    dataset = ChessPuzzleDataset("./data", train=True, download=True)
+    evalset = ChessPuzzleDataset("./data", idx_start=eval_start, idx_end=eval_end, download=True)
 
     train_split = int(5 / 6 * len(dataset))
     train_data, test_data = torch.utils.data.random_split(dataset,
@@ -73,7 +68,7 @@ def get_model(model, width, depth):
         model:      str, Name of the model
         width:      int, Width of network
         depth:      int, Depth of network
-        return:
+    return:
         net:        Pytorch Network Object
     """
     model = model.lower()
@@ -81,18 +76,8 @@ def get_model(model, width, depth):
     return net
 
 
-def get_optimizer(optimizer_name, model, net, lr):
+def get_optimizer(optimizer_name, net, lr):
     optimizer_name = optimizer_name.lower()
-    model = model.lower()
-
-    # if "recur" in model:
-    #     base_params = [p for n, p in net.named_parameters() if "recur" not in n]
-    #     recur_params = [p for n, p in net.named_parameters() if "recur" in n]
-    #     iters = net.iters
-    # else:
-    #     base_params = [p for n, p in net.named_parameters()]
-    #     recur_params = []
-    #     iters = 1
 
     base_params = [p for n, p in net.named_parameters()]
     recur_params = []
@@ -180,46 +165,6 @@ def test_default(net, testloader, device):
     return accuracy
 
 
-def test_hist(net, testloader, device):
-    net.eval()
-    net.to(device)
-    correct = 0
-    total = 0
-    nm = net.module
-    correct_tensor = torch.zeros(len(testloader.dataset))
-    idx = 0
-    with torch.no_grad():
-        for inputs, targets in tqdm(testloader, leave=False):
-
-            inputs, targets = inputs.to(device), targets.to(device)
-            net(inputs)
-            confidence_array = torch.zeros(nm.iters, inputs.size(0))
-            for i, thought in enumerate(nm.thoughts):
-                if i < 8:
-                    continue
-                thought_s = torch.nn.functional.softmax(thought.detach(), dim=1)
-                confidence_array[i] = thought_s.max(dim=1)[0].sum([1, 2])
-
-            exit_iter = confidence_array.argmax(0)
-            outputs = nm.thoughts[exit_iter, torch.arange(nm.thoughts.size(1))].squeeze()
-
-            tk = torch.topk(outputs[:, 1].view(-1, 64), 2, dim=1)[0].min(dim=1)[0]
-            big_tk = einops.repeat(tk, 'n -> n k', k=8)
-            big_tk = einops.repeat(big_tk, 'n m -> n m k', k=8)
-            outputs[:, 1][outputs[:, 1] < big_tk] = -float("Inf")
-            outputs[:, 0] = -float("Inf")
-            predicted = outputs.argmax(1)
-            correct_this_batch = torch.amin(predicted == targets, dim=[1, 2])
-            correct_tensor[idx:idx+targets.size(0)] = correct_this_batch
-            idx += targets.size(0)
-            correct += correct_this_batch.sum().item()
-
-            total += targets.size(0)
-
-    accuracy = 100.0 * correct / total
-    return correct_tensor, accuracy
-
-
 def test_max_conf(net, testloader, device):
     net.eval()
     net.to(device)
@@ -250,52 +195,6 @@ def test_max_conf(net, testloader, device):
             correct += torch.amin(predicted == targets, dim=[1, 2]).sum().item()
 
             total += targets.size(0)
-
-    accuracy = 100.0 * correct / total
-    return accuracy
-
-
-def test_potential(net, testloader, device):
-    net.eval()
-    net.to(device)
-    correct = 0
-    total = 0
-    nm = net.module
-    with torch.no_grad():
-        for inputs, targets in tqdm(testloader, leave=False):
-
-            inputs, targets = inputs.to(device), targets.to(device)
-            net(inputs)
-            correct_array = torch.zeros(nm.iters, inputs.size(0))
-
-            for i, thought in enumerate(nm.thoughts):
-                thought_s = torch.nn.functional.softmax(thought.detach(), dim=1)
-                tk = torch.topk(thought_s[:, 1].view(-1, 64), 2, dim=1)[0].min(dim=1)[0]
-                test = einops.repeat(tk, 'n -> n k', k=8)
-                test = einops.repeat(test, 'n m -> n m k', k=8)
-                thought_s[:, 1][thought_s[:, 1] < test] = 0
-                predicted = thought_s.argmax(1)
-                correct_array[i] = torch.amin(predicted == targets, dim=[1, 2])
-
-            # print(correct_array.sum(dim=1))
-            print("after 4 iters", (correct_array[:4].sum(dim=0)>0).sum().item())
-            print("after 5 iters", (correct_array[:5].sum(dim=0)>0).sum().item())
-            print("after 6 iters", (correct_array[:6].sum(dim=0)>0).sum().item())
-            print("after 7 iters", (correct_array[:7].sum(dim=0)>0).sum().item())
-            print("after 8 iters", (correct_array[:8].sum(dim=0)>0).sum().item())
-            print("after 9 iters", (correct_array[:9].sum(dim=0)>0).sum().item())
-            print("after 10 iters", (correct_array[:10].sum(dim=0)>0).sum().item())
-            print("after 11 iters", (correct_array[:11].sum(dim=0)>0).sum().item())
-            print("after 12 iters", (correct_array[:12].sum(dim=0)>0).sum().item())
-            print("after 13 iters", (correct_array[:13].sum(dim=0)>0).sum().item())
-            print("after 14 iters", (correct_array[:14].sum(dim=0)>0).sum().item())
-            print("after 15 iters", (correct_array[:15].sum(dim=0)>0).sum().item())
-            print("after 16 iters", (correct_array[:16].sum(dim=0)>0).sum().item())
-            print("after 17 iters", (correct_array[:17].sum(dim=0)>0).sum().item())
-            print("after 18 iters", (correct_array[:18].sum(dim=0)>0).sum().item())
-            print("after 19 iters", (correct_array[:19].sum(dim=0)>0).sum().item())
-            print("after 20 iters", (correct_array[:20].sum(dim=0)>0).sum().item())
-            exit()
 
     accuracy = 100.0 * correct / total
     return accuracy

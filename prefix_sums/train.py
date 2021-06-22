@@ -93,13 +93,8 @@ def main():
         writer = SummaryWriter(log_dir=f"{args.output}/debug/{train_log[:-4]}")
     ####################################################
     #               Dataset and Network and Optimizer
-    trainloader, testloader, evalloader = get_dataloaders(args.train_batch_size,
-                                                          args.test_batch_size,
-                                                          args.train_data,
-                                                          args.eval_data,
-                                                          args.train_split,
-                                                          data_path=args.data_path,
-                                                          shuffle=args.shuffle)
+    trainloader, testloader, evalloader = get_dataloaders(args.train_batch_size, args.test_batch_size, args.train_data,
+                                                          args.eval_data, args.train_split, shuffle=args.shuffle)
 
     # load model from path if a path is provided
     if args.model_path is not None:
