@@ -148,7 +148,7 @@ def test_default(net, testloader, device):
     total = 0
 
     with torch.no_grad():
-        for inputs, targets in tqdm(testloader, leave=False):
+        for inputs, targets, _ in tqdm(testloader, leave=False):
 
             inputs, targets = inputs.to(device), targets.to(device)
             outputs = net(inputs)
@@ -172,7 +172,7 @@ def test_max_conf(net, testloader, device):
     total = 0
     nm = net.module
     with torch.no_grad():
-        for inputs, targets in tqdm(testloader, leave=False):
+        for inputs, targets, _ in tqdm(testloader, leave=False):
 
             inputs, targets = inputs.to(device), targets.to(device)
             net(inputs)
@@ -251,7 +251,7 @@ def train_default(net, trainloader, optimizer_obj, device):
     correct = 0
     total = 0
 
-    for inputs, targets in tqdm(trainloader, leave=False):
+    for inputs, targets, _ in tqdm(trainloader, leave=False):
         inputs, targets = inputs.to(device), targets.to(device).long()
         optimizer.zero_grad()
         outputs = net(inputs)
