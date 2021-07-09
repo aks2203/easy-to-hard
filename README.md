@@ -8,7 +8,7 @@ To install requirements:
 
 ```pip install -r requirements.txt```
 
-To use the datasets we use in this project, we recommend you install our [Python package](https://github.com/ask2203/easy-to-hard-data) `easy-to-hard-data` by running:
+To use the datasets we use in this project, we recommend you install our [Python package](https://github.com/aks2203/easy-to-hard-data) `easy-to-hard-data` by running:
 ```
 pip install easy-to-hard-data
 ```
