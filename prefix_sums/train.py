@@ -110,11 +110,12 @@ def main():
         start_epoch = 0
         optimizer_state_dict = None
 
-    device_ids = [int(i) for i in os.environ["CUDA_VISIBLE_DEVICES"].split(",")]
-    if args.test_iterations and len(device_ids) > 1:
-        print(f"{ic.format()}: Can't test on multiple GPUs. Exiting")
-        sys.exit()
-    net = torch.nn.DataParallel(net, device_ids=device_ids)
+    if device == "cuda":
+        device_ids = [int(i) for i in os.environ["CUDA_VISIBLE_DEVICES"].split(",")]
+        if args.test_iterations and len(device_ids) > 1:
+            print(f"{ic.format()}: Can't test on multiple GPUs. Exiting")
+            sys.exit()
+        net = torch.nn.DataParallel(net, device_ids=device_ids)
     net = net.to(device)
     pytorch_total_params = sum(p.numel() for p in net.parameters())
     optimizer = get_optimizer(args.optimizer, args.model, net, args.lr)

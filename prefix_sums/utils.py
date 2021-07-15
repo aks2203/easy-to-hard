@@ -52,8 +52,10 @@ def get_dataloaders(train_batch_size, test_batch_size, train_data, eval_data, tr
     dataset = PrefixSumDataset("./data", num_bits=train_data)
     evalset = PrefixSumDataset("./data", num_bits=eval_data)
 
+    num_train = int(train_split * len(dataset))
+
     trainset, testset = torch.utils.data.random_split(dataset,
-                                                      [train_split, int(1e4 - train_split)],
+                                                      [num_train, int(1e4 - num_train)],
                                                       generator=torch.Generator().manual_seed(42))
 
     trainloader = data.DataLoader(trainset, num_workers=0, batch_size=train_batch_size,
