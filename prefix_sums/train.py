@@ -47,7 +47,7 @@ def main():
     parser.add_argument("--lr_factor", default=0.1, type=float, help="learning rate decay factor")
     parser.add_argument("--lr_schedule", nargs="+", default=[100, 150], type=int,
                         help="how often to decrease lr")
-    parser.add_argument("--model", default="conv_net", type=str, help="model for training")
+    parser.add_argument("--model", default="recur_resnet", type=str, help="model for training")
     parser.add_argument("--model_path", default=None, type=str, help="where is the model saved?")
     parser.add_argument("--no_shuffle", action="store_false", dest="shuffle",
                         help="shuffle training data?")
