@@ -16,7 +16,7 @@ pip install easy-to-hard-data
 You many also download raw datasets. See the [Google Drive folder](https://drive.google.com/drive/folders/1ad_ZESAddlfx-b3CnK1ohoKz6Sp8U-5g?usp=sharing).
 
 ## Training \& Testing
-See the dataset specific documentation in the corresonding directories: [Prefix Sums](./prefix_sums/README_PREFIXSUMS.md), [Mazes](./mazes/README_MAZES.md), [Chess](./chess/README_CHESS.md).
+See the dataset specific documentation in the corresponding directories: [Prefix Sums](./prefix_sums/README_PREFIXSUMS.md), [Mazes](./mazes/README_MAZES.md), [Chess](./chess/README_CHESS.md).
 
 ## Citing our paper
 If you find this code helpful, please consider citing our work.
