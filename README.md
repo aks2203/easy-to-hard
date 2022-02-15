@@ -1,5 +1,11 @@
 # Easy-To-Hard
 
+---
+
+**(February 2022) This repository is no longer being maintained. All the experiments can be done with new and improved code. See our new [deep-thinking repository](http://github.com/aks2203/deep-thinking).**
+
+---
+
 The official repository for the paper ["Can You Learn an Algorithm? Generalizing from Easy to Hard Problems with Recurrent Networks"](https://arxiv.org/abs/2106.04537).
 
 ## Getting Started
